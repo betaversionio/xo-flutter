@@ -1,0 +1,179 @@
+name: create
+description: Scaffold a production-ready Flutter app
+
+on:
+  - create
+
+inputs:
+  appName:
+    prompt: "App display name?"
+    description: Display name shown in the OS (e.g. My App)
+    required: true
+    type: text
+
+  projectName:
+    prompt: "Project name (snake_case)?"
+    description: Used for package imports and dart package name (e.g. my_app)
+    required: true
+    type: text
+
+  orgId:
+    prompt: "Organization ID?"
+    description: Bundle ID prefix (e.g. com.example) — final bundle ID will be orgId.projectName
+    required: true
+    type: text
+
+  stateManagement:
+    prompt: "State management?"
+    type: select
+    choices:
+      - { value: riverpod, label: "Riverpod + Hooks (recommended)" }
+      - { value: bloc, label: BLoC }
+      - { value: none, label: None }
+    default: riverpod
+
+  navigation:
+    prompt: "Navigation?"
+    type: select
+    choices:
+      - { value: go_router, label: "GoRouter (recommended)" }
+      - { value: none, label: "Flutter Navigator 2.0" }
+    default: go_router
+
+  features:
+    prompt: "Which features to include?"
+    type: multiselect
+    choices:
+      - { value: theming, label: "Dark/Light theming" }
+      - { value: networking, label: "Networking (Dio + interceptors)" }
+      - { value: auth, label: "Auth screens (login / register)" }
+      - { value: firebase, label: "Firebase (core + messaging)" }
+      - { value: storage, label: "Secure storage + SharedPrefs" }
+      - { value: flavors, label: "Flavor support (dev / staging / prod)" }
+
+jobs:
+  scaffold:
+    steps:
+      # Step 1: create a vanilla Flutter app in the current directory
+      - run: "flutter create . --org {{ inputs.orgId }} --project-name {{ inputs.projectName }}"
+
+      # Step 2: replace generated pubspec with our curated one
+      - uses: xo/template
+        with:
+          from: templates/pubspec.yaml
+          to: pubspec.yaml
+
+      # Step 3: core dart files
+      - uses: xo/template
+        with:
+          from: templates/main.dart
+          to: lib/main.dart
+
+      - uses: xo/template
+        with:
+          from: templates/app.dart
+          to: lib/app.dart
+
+      - uses: xo/copy
+        with:
+          from: templates/analysis_options.yaml
+          to: analysis_options.yaml
+
+      # Step 4: README and .vscode
+      - uses: xo/template
+        with:
+          from: templates/README.md
+          to: README.md
+
+      - uses: xo/copy
+        with:
+          from: templates/.vscode/extensions.json
+          to: .vscode/extensions.json
+
+      - uses: xo/copy
+        with:
+          from: templates/.vscode/settings.json
+          to: .vscode/settings.json
+
+      - uses: xo/template
+        with:
+          from: templates/.vscode/launch.json
+          to: .vscode/launch.json
+
+      - uses: xo/template
+        with:
+          from: templates/.vscode/tasks.json
+          to: .vscode/tasks.json
+
+      # Step 5: logger (always — very lightweight)
+      - uses: xo/copy
+        with:
+          from: lib/base/utils/logger/logger.dart
+          to: lib/utils/logger/logger.dart
+
+      # Step 5: theming
+      - if: "inputs.features && inputs.features.includes('theming')"
+        uses: xo/copy
+        with:
+          from: lib/theme/
+          to: lib/theme/
+
+      # Step 6: routing
+      - if: "'{{ inputs.navigation }}' === 'go_router'"
+        uses: xo/template
+        with:
+          from: lib/routes/app_router.dart
+          to: lib/routes/app_router.dart
+
+      # Step 7: networking
+      - if: "inputs.features && inputs.features.includes('networking')"
+        uses: xo/copy
+        with:
+          from: lib/networking/
+          to: lib/services/network/
+
+      # Step 8: auth
+      - if: "inputs.features && inputs.features.includes('auth')"
+        uses: xo/copy
+        with:
+          from: lib/auth/
+          to: lib/features/auth/
+
+      # Step 9: firebase
+      - if: "inputs.features && inputs.features.includes('firebase')"
+        uses: xo/copy
+        with:
+          from: lib/firebase/
+          to: lib/services/firebase/
+
+      # Step 10: storage
+      - if: "inputs.features && inputs.features.includes('storage')"
+        uses: xo/copy
+        with:
+          from: lib/storage/
+          to: lib/services/storage/
+
+      # Step 11: flavors
+      - if: "inputs.features && inputs.features.includes('flavors')"
+        uses: xo/copy
+        with:
+          from: lib/flavors/
+          to: lib/config/
+
+      # Step 12: initialization
+      - uses: xo/template
+        with:
+          from: lib/core/initialization/app_initializer.dart
+          to: lib/core/initialization/app_initializer.dart
+
+      # Step 13: Replace PROJECTNAME placeholder with actual project name in all dart files
+      - run: "find lib -name '*.dart' -exec sed -i.bak 's/PROJECTNAME/{{ inputs.projectName }}/g' {} + && find lib -name '*.bak' -delete"
+
+      # Step 14: update Android build.gradle.kts with correct namespace, applicationId, and optional flavors
+      - uses: xo/template
+        with:
+          from: templates/android/app/build.gradle.kts
+          to: android/app/build.gradle.kts
+
+      # Step 15: install packages
+      - run: flutter pub get

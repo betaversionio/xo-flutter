@@ -1,0 +1,78 @@
+name: {{ inputs.projectName }}
+description: {{ inputs.appName }} — built with xo-flutter
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  iconsax: ^0.0.8
+  flutter_svg: ^2.2.0
+  gap: ^3.0.1
+  logger: ^2.6.1
+  equatable: ^2.0.5
+  google_fonts: ^6.3.2
+  package_info_plus: ^9.0.0
+
+{{#if (eq inputs.stateManagement "riverpod")}}
+  # State management
+  flutter_riverpod: ^2.6.1
+  hooks_riverpod: ^2.6.1
+  flutter_hooks: ^0.21.2
+{{/if}}
+{{#if (eq inputs.stateManagement "bloc")}}
+  # State management
+  flutter_bloc: ^9.0.0
+  bloc: ^9.0.0
+{{/if}}
+{{#if (eq inputs.navigation "go_router")}}
+  # Navigation
+  go_router: ^14.0.0
+{{/if}}
+{{#if (includes inputs.features "networking")}}
+  # Networking
+  dio: ^5.8.0+1
+  pretty_dio_logger: ^1.4.0
+  dio_cache_interceptor: ^4.0.3
+  connectivity_plus: ^6.1.2
+{{/if}}
+{{#if (includes inputs.features "firebase")}}
+  # Firebase
+  firebase_core: ^3.12.1
+  firebase_messaging: ^15.2.4
+  firebase_remote_config: ^5.1.4
+  flutter_local_notifications: ^19.4.1
+  permission_handler: ^12.0.1
+{{/if}}
+{{#if (includes inputs.features "storage")}}
+  # Storage
+  flutter_secure_storage: ^9.2.4
+  shared_preferences: ^2.5.3
+{{/if}}
+{{#if (includes inputs.features "theming")}}
+  # UI extras for theming
+  shimmer_animation: ^2.2.2
+{{/if}}
+  # Media & utilities
+  cached_network_image: ^3.4.1
+  url_launcher: ^6.3.1
+  flutter_dotenv: ^5.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_native_splash: ^2.4.4
+  flutter_launcher_icons: ^0.14.3
+
+flutter:
+  uses-material-design: true
+  assets:
+    - .env
+    - assets/
+    - assets/images/
+    - assets/icons/

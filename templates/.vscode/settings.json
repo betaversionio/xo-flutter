@@ -1,0 +1,64 @@
+{
+  "dart.lineLength": 80,
+  "dart.previewFlutterUiGuides": true,
+  "dart.previewFlutterUiGuidesCustomTracking": true,
+  "dart.openDevTools": "flutter",
+  "dart.hotReloadOnSave": "all",
+  "dart.showInspectorNotificationsForWidgetErrors": true,
+
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "editor.rulers": [80],
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
+  "editor.wordWrap": "on",
+  "editor.snippetSuggestions": "top",
+  "editor.inlineSuggest.enabled": true,
+
+  "files.associations": {
+    "*.dart": "dart"
+  },
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/.dart_tool": true,
+    "**/.flutter-plugins": true,
+    "**/.flutter-plugins-dependencies": true,
+    "**/generated_plugin_registrant.dart": true,
+    "**/.metadata": true,
+    "**/android/.gradle": true,
+    "**/ios/Pods": true,
+    "**/ios/.symlinks": true
+  },
+  "files.watcherExclude": {
+    "**/build/**": true,
+    "**/.dart_tool/**": true
+  },
+  "search.exclude": {
+    "**/build": true,
+    "**/.dart_tool": true
+  },
+
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.enableSmartCommit": true,
+
+  "explorer.confirmDelete": false,
+  "explorer.confirmDragAndDrop": false,
+  "explorer.compactFolders": false,
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "pubspec.yaml": "pubspec.lock, .metadata, .flutter-plugins, .flutter-plugins-dependencies",
+    "*.dart": "${capture}.g.dart, ${capture}.freezed.dart, ${capture}.mocks.dart",
+    ".env": ".env.*, .env.development, .env.staging, .env.production",
+    "README.md": "LICENSE, CHANGELOG.md",
+    "analysis_options.yaml": "devtools_options.yaml, dartdoc_options.yaml"
+  }
+}
