@@ -105,75 +105,104 @@ jobs:
           from: templates/.vscode/tasks.json
           to: .vscode/tasks.json
 
-      # Step 5: logger (always — very lightweight)
+      # logger (always)
       - uses: xo/copy
         with:
           from: lib/base/utils/logger/logger.dart
           to: lib/utils/logger/logger.dart
 
-      # Step 5: theming
+      # theming
       - if: "inputs.features && inputs.features.includes('theming')"
         uses: xo/copy
         with:
-          from: lib/theme/
-          to: lib/theme/
+          from: lib/theme/theme.dart
+          to: lib/theme/theme.dart
 
-      # Step 6: routing
+      - if: "inputs.features && inputs.features.includes('theming')"
+        uses: xo/copy
+        with:
+          from: lib/theme/constants/colors.dart
+          to: lib/theme/constants/colors.dart
+
+      - if: "inputs.features && inputs.features.includes('theming')"
+        uses: xo/copy
+        with:
+          from: lib/theme/constants/typography.dart
+          to: lib/theme/constants/typography.dart
+
+      - if: "inputs.features && inputs.features.includes('theming')"
+        uses: xo/copy
+        with:
+          from: lib/theme/extensions/box_shadow_extension.dart
+          to: lib/theme/extensions/box_shadow_extension.dart
+
+      # routing
       - if: "'{{ inputs.navigation }}' === 'go_router'"
         uses: xo/template
         with:
           from: lib/routes/app_router.dart
           to: lib/routes/app_router.dart
 
-      # Step 7: networking
+      # networking
       - if: "inputs.features && inputs.features.includes('networking')"
         uses: xo/copy
         with:
-          from: lib/networking/
-          to: lib/services/network/
+          from: lib/networking/dio_client.dart
+          to: lib/services/network/dio_client.dart
 
-      # Step 8: auth
+      - if: "inputs.features && inputs.features.includes('networking')"
+        uses: xo/copy
+        with:
+          from: lib/networking/api_exceptions.dart
+          to: lib/services/network/api_exceptions.dart
+
+      # auth
       - if: "inputs.features && inputs.features.includes('auth')"
         uses: xo/copy
         with:
-          from: lib/auth/
-          to: lib/features/auth/
+          from: lib/auth/screens/login.dart
+          to: lib/features/auth/screens/login.dart
 
-      # Step 9: firebase
+      - if: "inputs.features && inputs.features.includes('auth')"
+        uses: xo/copy
+        with:
+          from: lib/auth/screens/register.dart
+          to: lib/features/auth/screens/register.dart
+
+      # firebase
       - if: "inputs.features && inputs.features.includes('firebase')"
         uses: xo/copy
         with:
-          from: lib/firebase/
-          to: lib/services/firebase/
+          from: lib/firebase/firebase_service.dart
+          to: lib/services/firebase/firebase_service.dart
 
-      # Step 10: storage
+      # storage
       - if: "inputs.features && inputs.features.includes('storage')"
         uses: xo/copy
         with:
-          from: lib/storage/
-          to: lib/services/storage/
+          from: lib/storage/secure_storage.dart
+          to: lib/services/storage/secure_storage.dart
 
-      # Step 11: flavors
+      # flavors
       - if: "inputs.features && inputs.features.includes('flavors')"
         uses: xo/copy
         with:
-          from: lib/flavors/
-          to: lib/config/
+          from: lib/flavors/flavor_config.dart
+          to: lib/config/flavor_config.dart
 
-      # Step 12: initialization
+      # initialization
       - uses: xo/template
         with:
           from: lib/core/initialization/app_initializer.dart
           to: lib/core/initialization/app_initializer.dart
 
-      # Step 13: Replace PROJECTNAME placeholder with actual project name in all dart files
+      # replace PROJECTNAME placeholder in all dart files
       - run: "find lib -name '*.dart' -exec sed -i.bak 's/PROJECTNAME/{{ inputs.projectName }}/g' {} + && find lib -name '*.bak' -delete"
 
-      # Step 14: update Android build.gradle.kts with correct namespace, applicationId, and optional flavors
+      # android build.gradle.kts — correct namespace, applicationId, optional flavors
       - uses: xo/template
         with:
           from: templates/android/app/build.gradle.kts
           to: android/app/build.gradle.kts
 
-      # Step 15: install packages
       - run: flutter pub get
