@@ -2,9 +2,9 @@
 // Uses Material 3 with Poppins typography and a customizable brand color palette.
 library;
 
-import 'package:PROJECTNAME/theme/constants/colors.dart';
-import 'package:PROJECTNAME/theme/constants/typography.dart';
-import 'package:PROJECTNAME/theme/extensions/box_shadow_extension.dart';
+import 'package:{{ inputs.projectName }}/theme/constants/colors.dart';
+import 'package:{{ inputs.projectName }}/theme/constants/typography.dart';
+import 'package:{{ inputs.projectName }}/theme/extensions/box_shadow_extension.dart';
 import 'package:flutter/material.dart';
 
 /// Light theme — export this from app.dart as `theme:`.

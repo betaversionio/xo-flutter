@@ -1,8 +1,4 @@
-// HTTP client configuration using Dio.
-// package: PROJECTNAME
-//
-// Sets up base URL (from .env), timeouts, caching, and request/response
-// interceptors. Replace PROJECTNAME after copy (handled by the generator).
+// HTTP client configuration using Dio for {{ inputs.projectName }}.
 
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';

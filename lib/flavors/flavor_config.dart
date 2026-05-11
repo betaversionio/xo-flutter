@@ -29,24 +29,22 @@ class FlavorConfig {
   static String get appName {
     switch (currentFlavor) {
       case development:
-        return 'PROJECTNAME Dev';
+        return '{{ inputs.appName }} Dev';
       case staging:
-        return 'PROJECTNAME Staging';
+        return '{{ inputs.appName }} Staging';
       default:
-        return 'PROJECTNAME';
+        return '{{ inputs.appName }}';
     }
   }
 
-  /// Flavor-specific bundle ID suffix.
-  /// Update with your orgId.projectName pattern.
   static String get packageName {
     switch (currentFlavor) {
       case development:
-        return 'com.example.PROJECTNAME.dev';
+        return '{{ inputs.orgId }}.{{ inputs.projectName }}.dev';
       case staging:
-        return 'com.example.PROJECTNAME.staging';
+        return '{{ inputs.orgId }}.{{ inputs.projectName }}.staging';
       default:
-        return 'com.example.PROJECTNAME';
+        return '{{ inputs.orgId }}.{{ inputs.projectName }}';
     }
   }
 

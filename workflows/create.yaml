@@ -54,155 +54,123 @@ inputs:
 jobs:
   scaffold:
     steps:
-      # Step 1: create a vanilla Flutter app in the current directory
+      # Bootstrap a vanilla Flutter app
       - run: "flutter create . --org {{ inputs.orgId }} --project-name {{ inputs.projectName }}"
 
-      # Step 2: replace generated pubspec with our curated one
+      # Root templates — rendered in parallel
       - uses: xo/template
+        parallel: true
         with:
           from: templates/pubspec.yaml
           to: pubspec.yaml
-
-      # Step 3: core dart files
       - uses: xo/template
+        parallel: true
         with:
           from: templates/main.dart
           to: lib/main.dart
-
       - uses: xo/template
+        parallel: true
         with:
           from: templates/app.dart
           to: lib/app.dart
-
       - uses: xo/copy
+        parallel: true
         with:
           from: templates/analysis_options.yaml
           to: analysis_options.yaml
-
-      # Step 4: README and .vscode
       - uses: xo/template
+        parallel: true
         with:
           from: templates/README.md
           to: README.md
 
+      # .vscode — rendered in parallel
       - uses: xo/copy
+        parallel: true
         with:
           from: templates/.vscode/extensions.json
           to: .vscode/extensions.json
-
       - uses: xo/copy
+        parallel: true
         with:
           from: templates/.vscode/settings.json
           to: .vscode/settings.json
-
       - uses: xo/template
+        parallel: true
         with:
           from: templates/.vscode/launch.json
           to: .vscode/launch.json
-
       - uses: xo/template
+        parallel: true
         with:
           from: templates/.vscode/tasks.json
           to: .vscode/tasks.json
 
-      # logger (always)
+      # android build config
+      - uses: xo/template
+        with:
+          from: templates/android/app/build.gradle.kts
+          to: android/app/build.gradle.kts
+
+      # Logger (always included)
       - uses: xo/copy
         with:
           from: lib/base/utils/logger/logger.dart
           to: lib/utils/logger/logger.dart
 
-      # theming
-      - if: "inputs.features && inputs.features.includes('theming')"
-        uses: xo/copy
+      # App initializer (always included — uses Handlebars)
+      - uses: xo/template
         with:
-          from: lib/theme/theme.dart
-          to: lib/theme/theme.dart
+          from: lib/core/initialization/app_initializer.dart
+          to: lib/core/initialization/app_initializer.dart
 
+      # Theming — glob copies entire lib/theme/**/*.dart tree
       - if: "inputs.features && inputs.features.includes('theming')"
-        uses: xo/copy
+        uses: xo/template
         with:
-          from: lib/theme/constants/colors.dart
-          to: lib/theme/constants/colors.dart
+          from: lib/theme/**/*.dart
+          to: lib/theme/
 
-      - if: "inputs.features && inputs.features.includes('theming')"
-        uses: xo/copy
-        with:
-          from: lib/theme/constants/typography.dart
-          to: lib/theme/constants/typography.dart
-
-      - if: "inputs.features && inputs.features.includes('theming')"
-        uses: xo/copy
-        with:
-          from: lib/theme/extensions/box_shadow_extension.dart
-          to: lib/theme/extensions/box_shadow_extension.dart
-
-      # routing
+      # Routing
       - if: "'{{ inputs.navigation }}' === 'go_router'"
         uses: xo/template
         with:
           from: lib/routes/app_router.dart
           to: lib/routes/app_router.dart
 
-      # networking
+      # Networking — glob copies all files in lib/networking/ to lib/services/network/
       - if: "inputs.features && inputs.features.includes('networking')"
-        uses: xo/copy
+        uses: xo/template
         with:
-          from: lib/networking/dio_client.dart
-          to: lib/services/network/dio_client.dart
+          from: lib/networking/*.dart
+          to: lib/services/network/
 
-      - if: "inputs.features && inputs.features.includes('networking')"
-        uses: xo/copy
-        with:
-          from: lib/networking/api_exceptions.dart
-          to: lib/services/network/api_exceptions.dart
-
-      # auth
+      # Auth screens — glob copies login + register
       - if: "inputs.features && inputs.features.includes('auth')"
         uses: xo/copy
         with:
-          from: lib/auth/screens/login.dart
-          to: lib/features/auth/screens/login.dart
+          from: lib/auth/screens/*.dart
+          to: lib/features/auth/screens/
 
-      - if: "inputs.features && inputs.features.includes('auth')"
-        uses: xo/copy
-        with:
-          from: lib/auth/screens/register.dart
-          to: lib/features/auth/screens/register.dart
-
-      # firebase
+      # Firebase
       - if: "inputs.features && inputs.features.includes('firebase')"
-        uses: xo/copy
+        uses: xo/template
         with:
           from: lib/firebase/firebase_service.dart
           to: lib/services/firebase/firebase_service.dart
 
-      # storage
+      # Secure storage
       - if: "inputs.features && inputs.features.includes('storage')"
         uses: xo/copy
         with:
           from: lib/storage/secure_storage.dart
           to: lib/services/storage/secure_storage.dart
 
-      # flavors
+      # Flavors
       - if: "inputs.features && inputs.features.includes('flavors')"
-        uses: xo/copy
+        uses: xo/template
         with:
           from: lib/flavors/flavor_config.dart
           to: lib/config/flavor_config.dart
-
-      # initialization
-      - uses: xo/template
-        with:
-          from: lib/core/initialization/app_initializer.dart
-          to: lib/core/initialization/app_initializer.dart
-
-      # replace PROJECTNAME placeholder in all dart files
-      - run: "find lib -name '*.dart' -exec sed -i.bak 's/PROJECTNAME/{{ inputs.projectName }}/g' {} + && find lib -name '*.bak' -delete"
-
-      # android build.gradle.kts — correct namespace, applicationId, optional flavors
-      - uses: xo/template
-        with:
-          from: templates/android/app/build.gradle.kts
-          to: android/app/build.gradle.kts
 
       - run: flutter pub get

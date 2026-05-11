@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_redundant_argument_values
 
-import 'package:PROJECTNAME/utils/logger/logger.dart';
+import 'package:{{ inputs.projectName }}/utils/logger/logger.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
